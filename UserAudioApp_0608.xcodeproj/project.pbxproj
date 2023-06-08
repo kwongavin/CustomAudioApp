@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		867D53982A32997200EDC6BA /* UserAudioApp_0608App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53972A32997200EDC6BA /* UserAudioApp_0608App.swift */; };
+		867D53982A32997200EDC6BA /* CustomUserAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53972A32997200EDC6BA /* CustomUserAudio.swift */; };
 		867D539A2A32997200EDC6BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53992A32997200EDC6BA /* ContentView.swift */; };
 		867D539C2A32997300EDC6BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 867D539B2A32997300EDC6BA /* Assets.xcassets */; };
 		867D539F2A32997300EDC6BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 867D539E2A32997300EDC6BA /* Preview Assets.xcassets */; };
@@ -16,7 +16,7 @@
 
 /* Begin PBXFileReference section */
 		867D53942A32997200EDC6BA /* UserAudioApp_0608.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UserAudioApp_0608.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		867D53972A32997200EDC6BA /* UserAudioApp_0608App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAudioApp_0608App.swift; sourceTree = "<group>"; };
+		867D53972A32997200EDC6BA /* CustomUserAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserAudio.swift; sourceTree = "<group>"; };
 		867D53992A32997200EDC6BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		867D539B2A32997300EDC6BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		867D539E2A32997300EDC6BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -53,9 +53,9 @@
 		867D53962A32997200EDC6BA /* UserAudioApp_0608 */ = {
 			isa = PBXGroup;
 			children = (
-				867D53972A32997200EDC6BA /* UserAudioApp_0608App.swift */,
-				867D53992A32997200EDC6BA /* ContentView.swift */,
+				867D53972A32997200EDC6BA /* CustomUserAudio.swift */,
 				867D53A52A32999600EDC6BA /* AudioTrackView.swift */,
+				867D53992A32997200EDC6BA /* ContentView.swift */,
 				867D539B2A32997300EDC6BA /* Assets.xcassets */,
 				867D539D2A32997300EDC6BA /* Preview Content */,
 			);
@@ -142,7 +142,7 @@
 			files = (
 				867D539A2A32997200EDC6BA /* ContentView.swift in Sources */,
 				867D53A62A32999600EDC6BA /* AudioTrackView.swift in Sources */,
-				867D53982A32997200EDC6BA /* UserAudioApp_0608App.swift in Sources */,
+				867D53982A32997200EDC6BA /* CustomUserAudio.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

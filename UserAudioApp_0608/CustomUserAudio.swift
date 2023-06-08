@@ -8,10 +8,10 @@
 import SwiftUI
 
 @main
-struct UserAudioApp_0608App: App {
+struct CustomUserAudio: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AudioTrackView()
         }
     }
 }
