@@ -35,7 +35,7 @@ struct AudioTrackView: View {
                         Text("AUDIO TRACKS")
                             .font(Font.custom("Futura Medium", size: geo.size.width*0.04))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        if audioFiles.isEmpty {
+                        if !audioFiles.isEmpty {
                             HStack(spacing: geo.size.width*0.04) {
                                 Button(action: {
                                     audioFiles.removeAll()
@@ -60,6 +60,7 @@ struct AudioTrackView: View {
                             .foregroundColor(Color("appColor7"))
                         }
                     }
+                    .padding()
                     if errorMessage != nil {
                         Text(errorMessage!)
                             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
@@ -113,8 +114,8 @@ struct AudioTrackView: View {
                         }
                         
                     }
-                    .frame(height: geo.size.height*0.20)
-                    .padding(.top, -12)
+                    .frame(height: geo.size.height*0.22)
+                    .padding(.horizontal)
                 }
                 .fileImporter(
                     isPresented: $openFiles,
@@ -129,7 +130,6 @@ struct AudioTrackView: View {
                         errorMessage = error.localizedDescription
                     }
                 }
-                .padding()
                 ScrollView(showsIndicators: false) {
                     VStack {
                         VStack {
@@ -153,7 +153,7 @@ struct AudioTrackView: View {
                                             .shadow(color: Color("shadowColor"), radius: 10)
                                             .foregroundColor(Color("mainColor"))
                                             .opacity(0.5)
-                                        Text("Drag your audio file here for\n<\(tracks[index])>")
+                                        Text("Drag your audio files here for\n<\(tracks[index])>")
                                             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
                                             .multilineTextAlignment(.center)
                                             .foregroundColor(Color("appColor7"))
@@ -163,6 +163,7 @@ struct AudioTrackView: View {
                                 .padding(.horizontal)
                             }
                         }
+                        .padding(.top, 7)
                         Group {
                             Divider()
                             Text("AUDIO PLAYER")
