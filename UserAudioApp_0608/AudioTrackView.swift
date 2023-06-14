@@ -27,15 +27,10 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var song1Items: [(Int,String)] = []
-    @State private var song2Items: [(Int,String)] = []
-    @State private var song3Items: [(Int,String)] = [
-        (1,"audio3"),
-        (2,"audio3"),
-        (3,"audio3"),
-        (4,"audio3"),
-        (5,"audio3"),
-    ]
+    @State private var song1Items: [String] = []
+    @State private var song2Items: [String] = []
+    @State private var song3Items: [String] =
+    [ "audio1", "audio2", "audio3", "audio4", "audio5" ]
     
     
     var body: some View {
@@ -227,7 +222,7 @@ extension AudioTrackView {
         }
     }
     
-    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[(Int,String)]>) -> some View {
+    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[String]>) -> some View {
         
         VStack {
             
@@ -257,7 +252,7 @@ extension AudioTrackView {
         }
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
-            items.wrappedValue.append((items.count+1,item))
+            items.wrappedValue.append(item)
             audioFiles.removeAll(where: {$0 == item })
             return true
         }
@@ -265,10 +260,10 @@ extension AudioTrackView {
 
     }
     
-    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[(Int,String)]>) -> some View {
+    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>) -> some View {
         HStack {
-            ForEach(items, id: \.self.0) { item in
-                Text("\(item.wrappedValue.0)")
+            ForEach(items, id: \.self) { item in
+                Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
                     .frame(height: 30)
                     .frame(maxWidth: geo.size.width/6.8)
                     .background{ Color.gray }
@@ -362,10 +357,18 @@ extension AudioTrackView {
     
 }
 
-// MARK: Preview
-
+// MARK: - Helper Functions
 // MARK: -
+extension AudioTrackView {
+    
+    private func getIndex(title: String, items: [String]) -> String {
+        "\((items.firstIndex(of: title) ?? -1) + 1)"
+    }
 
+}
+
+// MARK: Preview
+// MARK: -
 struct AudioTrackView_Previews: PreviewProvider {
     static var previews: some View {
         AudioTrackView()
