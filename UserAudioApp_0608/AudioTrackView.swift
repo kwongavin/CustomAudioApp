@@ -35,7 +35,7 @@ struct AudioTrackView: View {
     @State private var song3Items: [[String]] =
     [
         [ "audio1", "audio2", "audio3", "audio4", "audio5" ],
-        [ "audio11", "audio22", "audio33", "audio44", "audio55" ],
+        [ "audio11", "audio22", "audio33"],
         []
     ]
     
@@ -74,12 +74,12 @@ struct AudioTrackView: View {
             }
         }
     }
+    
 }
 
-// MARK: - View Functions
 
+// MARK: - Audio Track View Functions
 // MARK: -
-
 extension AudioTrackView {
     
     private func SelectedTracksTitleView(geo: GeometryProxy) -> some View {
@@ -206,10 +206,9 @@ extension AudioTrackView {
     
 }
 
-// MARK: - View Functions
 
+// MARK: - Song View Functions
 // MARK: -
-
 extension AudioTrackView {
     
     private func SongsListView(geo: GeometryProxy) -> some View {
@@ -218,9 +217,15 @@ extension AudioTrackView {
             
             VStack {
                 
+                //-------------------------------------------------- Song 1
+                
                 SongsInfoView(geo: geo, title: tracks[0], items: $song1Items)
                 
+                //-------------------------------------------------- Song 2
+                
                 SongsInfoView(geo: geo, title: tracks[1], items: $song2Items)
+                
+                //-------------------------------------------------- Song 3
                 
                 SongsInfoView(geo: geo, title: tracks[2], items: $song3Items)
                 
@@ -245,26 +250,20 @@ extension AudioTrackView {
                 
                 SongInfoRowView(geo: geo, items: items[0])
                 
-                Group {
-                    Spacer()
-                    Divider()
-                    Spacer()
-                }
+                DividerView()
                 
                 //-------------------------------------------------- Row 2
                 
                 SongInfoRowView(geo: geo, items: items[1])
                 
                 if showThirdRow {
-                    Group {
-                        Spacer()
-                        Divider()
-                        Spacer()
-                    }
+                    
+                    DividerView()
                     
                     //-------------------------------------------------- Row 3
                     
                     SongInfoRowView(geo: geo, items: items[1])
+                    
                 }
 
                 
@@ -297,13 +296,14 @@ extension AudioTrackView {
             Spacer()
             
         }
-        .padding(.horizontal)
+        .frame(maxWidth: .greatestFiniteMagnitude)
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
             items.wrappedValue.append(item)
             audioFiles.removeAll(where: {$0 == item })
             return true
         }
+        .padding(.horizontal)
 
     }
     
@@ -390,6 +390,23 @@ extension AudioTrackView {
     
 }
 
+
+// MARK: - Helper View Functions
+// MARK: -
+extension AudioTrackView {
+    
+    private func DividerView() -> some View {
+        
+        Group {
+            Spacer()
+            Divider()
+            Spacer()
+        }
+        
+    }
+}
+
+
 // MARK: - Helper Functions
 // MARK: -
 extension AudioTrackView {
@@ -399,6 +416,7 @@ extension AudioTrackView {
     }
 
 }
+
 
 // MARK: Preview
 // MARK: -
