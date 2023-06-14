@@ -26,6 +26,8 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
+    @State private var songFiles: [[Int:String]] = [[1:"Test"]]
+    
     var body: some View {
         GeometryReader { geo in
             
@@ -34,7 +36,7 @@ struct AudioTrackView: View {
                     Group {
                         Divider()
                         
-                        SelectedTracksView(geo: geo)
+                        SelectedTracksTitleView(geo: geo)
                         
                         if errorMessage != nil {
                             ErrorMessageView(geo: geo)
@@ -67,13 +69,17 @@ struct AudioTrackView: View {
 // MARK: -
 
 extension AudioTrackView {
-    private func SelectedTracksView(geo: GeometryProxy) -> some View {
+    
+    private func SelectedTracksTitleView(geo: GeometryProxy) -> some View {
+        
         HStack {
+            
             Text("AUDIO TRACKS")
                 .font(Font.custom("Futura Medium", size: geo.size.width*0.04))
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             if !audioFiles.isEmpty {
+                
                 HStack(spacing: geo.size.width*0.04) {
                     Button(action: {
                         audioFiles.removeAll()
@@ -120,7 +126,9 @@ extension AudioTrackView {
     }
     
     private func AudioFilesListView(geo: GeometryProxy) -> some View {
+        
         ZStack {
+            
             Rectangle()
                 .cornerRadius(15)
                 .foregroundColor(Color("mainColor"))
@@ -128,6 +136,7 @@ extension AudioTrackView {
                 .shadow(color: Color("shadowColor"), radius: 10)
             
             VStack(spacing: geo.size.width*0.03) {
+                
                 ForEach(audioFiles.indices, id: \.self) { r in
                     
                     ZStack {
@@ -140,7 +149,6 @@ extension AudioTrackView {
                             .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
                             .padding(8)
                     }
-                    
                     .draggable(audioFiles[r]) {
                         Text(audioFiles[r])
                     }
@@ -176,6 +184,7 @@ extension AudioTrackView {
             }
         })
     }
+    
 }
 
 // MARK: - View Functions
@@ -183,44 +192,86 @@ extension AudioTrackView {
 // MARK: -
 
 extension AudioTrackView {
+    
     private func SongsListView(geo: GeometryProxy) -> some View {
+        
         Group {
+            
             VStack {
+                
                 ForEach(tracks.indices, id: \.self) { index in
+                    
                     VStack {
-                        ZStack {
-                            Rectangle()
-                                .frame(height: geo.size.height*0.04)
-                                .cornerRadius(6)
-                                .foregroundColor(Color("textColor3"))
-                            Text(tracks[index])
-                                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
-                                .foregroundColor(.white)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.leading, geo.size.width*0.03)
+                        
+                        SongHeadingView(geo: geo, name: tracks[index])
+                        
+                        VStack {
+                            HStack {
+                                ForEach(songFiles[0].keys.sorted(), id: \.self) { key in
+                                  Text("\(key)")
+                                        .frame(height: 40)
+                                        .frame(width: geo.size.width/5)
+                                        .background{ Color.gray }
+                                        .cornerRadius(5)
+                                }
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 12)
+                            Spacer()
+                            
                         }
-                        ZStack {
-                            Rectangle()
-                                .frame(height: geo.size.height*0.15)
-                                .cornerRadius(15)
-                                .shadow(color: Color("shadowColor"), radius: 10)
-                                .foregroundColor(Color("mainColor"))
-                                .opacity(0.5)
-                            Text("Drag your audio file here for\n<\(tracks[index])>")
-                                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(Color("appColor7"))
-                        }
+                        .frame(maxWidth: .greatestFiniteMagnitude)
+                        .frame(height: geo.size.height*0.15)
+                        .overlay(DragFilesTextView(geo: geo, name: tracks[index], files: songFiles[0]))
+                        .background(RectangleBackgroundView(geo: geo))
                         .padding(.bottom, geo.size.height*0.02)
+                        
                     }
-                    .dropDestination(for: String.self) { _, _ in
+                    .dropDestination(for: String.self) { items, _ in
+                        songFiles[0][songFiles[0].keys.count + 1] = items.first ?? ""
                         // tracks[index].append(contentsOf: items)
-                        true
+                        return true
                     }
                     .padding(.horizontal)
                 }
+                
             }
+            
         }
+    }
+    
+    private func SongHeadingView(geo: GeometryProxy, name: String) -> some View {
+        ZStack {
+            
+            Rectangle()
+                .frame(height: geo.size.height*0.04)
+                .cornerRadius(6)
+                .foregroundColor(Color("textColor3"))
+            
+            Text(name)
+                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, geo.size.width*0.03)
+        }
+    }
+    
+    private func DragFilesTextView(geo: GeometryProxy, name: String, files: [Int:String]) -> some View {
+        Text("Drag your audio file here for\n<\(name)>")
+            .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+            .multilineTextAlignment(.center)
+            .foregroundColor(Color("appColor7"))
+            .opacity(files.keys.count > 0 ? 0 : 1)
+    }
+    
+    private func RectangleBackgroundView(geo: GeometryProxy) -> some View {
+        Rectangle()
+            .frame(height: geo.size.height*0.15)
+            .cornerRadius(15)
+            .shadow(color: Color("shadowColor"), radius: 10)
+            .foregroundColor(Color("mainColor"))
+            .opacity(0.5)
     }
     
     private func AudioPlayerView(geo: GeometryProxy) -> some View {
@@ -270,6 +321,7 @@ extension AudioTrackView {
         }
         .padding()
     }
+    
 }
 
 // MARK: Preview
