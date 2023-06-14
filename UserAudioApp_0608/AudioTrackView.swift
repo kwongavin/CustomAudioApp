@@ -29,7 +29,13 @@ struct AudioTrackView: View {
     
     @State private var song1Items: [(Int,String)] = []
     @State private var song2Items: [(Int,String)] = []
-    @State private var song3Items: [(Int,String)] = [(1,"audio3")]
+    @State private var song3Items: [(Int,String)] = [
+        (1,"audio3"),
+        (2,"audio3"),
+        (3,"audio3"),
+        (4,"audio3"),
+        (5,"audio3"),
+    ]
     
     
     var body: some View {
@@ -228,18 +234,17 @@ extension AudioTrackView {
             SongHeadingView(geo: geo, name: title)
             
             VStack {
-                HStack {
-                    ForEach(items, id: \.self.0) { item in
-                        Text("\(item.wrappedValue.0)")
-                            .frame(height: 40)
-                            .frame(width: geo.size.width/5)
-                            .background{ Color.gray }
-                            .cornerRadius(5)
-                    }
-                    Spacer()
-                }
-                .padding(.horizontal)
-                .padding(.vertical, 12)
+                
+                Spacer()
+                
+                SongInfoRowView(geo: geo, items: items)
+                
+                Spacer()
+                Divider()
+                Spacer()
+                
+                SongInfoRowView(geo: geo, items: items)
+                
                 Spacer()
                 
             }
@@ -260,7 +265,19 @@ extension AudioTrackView {
 
     }
     
-    
+    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[(Int,String)]>) -> some View {
+        HStack {
+            ForEach(items, id: \.self.0) { item in
+                Text("\(item.wrappedValue.0)")
+                    .frame(height: 30)
+                    .frame(maxWidth: geo.size.width/6.8)
+                    .background{ Color.gray }
+                    .cornerRadius(5)
+            }
+            Spacer()
+        }
+        .padding(.horizontal)
+    }
     
     private func SongHeadingView(geo: GeometryProxy, name: String) -> some View {
         ZStack {
