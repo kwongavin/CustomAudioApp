@@ -150,7 +150,14 @@ extension AudioTrackView {
                             .padding(8)
                     }
                     .draggable(audioFiles[r]) {
-                        Text(audioFiles[r])
+                        ZStack {
+                            Rectangle()
+                                .foregroundColor(Color("bgColor4"))
+                                .opacity(0.8)
+                            Text(audioFiles[r])
+                                .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
+                                .padding(8)
+                        }
                     }
                 }
             }
