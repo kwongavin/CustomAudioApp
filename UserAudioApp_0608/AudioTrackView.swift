@@ -24,13 +24,20 @@ struct AudioTrackView: View {
     // Audio Player on/off button
     @State private var isPlayerOn = false
     
+    // Show/Hide third row
+    @State private var showThirdRow = false
+    
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var song1Items: [String] = []
-    @State private var song2Items: [String] = []
-    @State private var song3Items: [String] =
-    [ "audio1", "audio2", "audio3", "audio4", "audio5" ]
+    @State private var song1Items: [[String]] = [[],[],[]]
+    @State private var song2Items: [[String]] = [[],[],[]]
+    @State private var song3Items: [[String]] =
+    [
+        [ "audio1", "audio2", "audio3", "audio4", "audio5" ],
+        [ "audio11", "audio22", "audio33", "audio44", "audio55" ],
+        []
+    ]
     
     
     var body: some View {
@@ -222,9 +229,11 @@ extension AudioTrackView {
         }
     }
     
-    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[String]>) -> some View {
+    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[[String]]>) -> some View {
         
         VStack {
+            
+            //-------------------------------------------------- Heading
             
             SongHeadingView(geo: geo, name: title)
             
@@ -232,13 +241,32 @@ extension AudioTrackView {
                 
                 Spacer()
                 
-                SongInfoRowView(geo: geo, items: items)
+                //-------------------------------------------------- Row 1
                 
-                Spacer()
-                Divider()
-                Spacer()
+                SongInfoRowView(geo: geo, items: items[0])
                 
-                SongInfoRowView(geo: geo, items: items)
+                Group {
+                    Spacer()
+                    Divider()
+                    Spacer()
+                }
+                
+                //-------------------------------------------------- Row 2
+                
+                SongInfoRowView(geo: geo, items: items[1])
+                
+                if showThirdRow {
+                    Group {
+                        Spacer()
+                        Divider()
+                        Spacer()
+                    }
+                    
+                    //-------------------------------------------------- Row 3
+                    
+                    SongInfoRowView(geo: geo, items: items[1])
+                }
+
                 
                 Spacer()
                 
@@ -250,18 +278,14 @@ extension AudioTrackView {
             .padding(.bottom, geo.size.height*0.02)
             
         }
-        .dropDestination(for: String.self) { values, _ in
-            guard let item = values.first else { return true }
-            items.wrappedValue.append(item)
-            audioFiles.removeAll(where: {$0 == item })
-            return true
-        }
         .padding(.horizontal)
 
     }
     
     private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>) -> some View {
+        
         HStack {
+            
             ForEach(items, id: \.self) { item in
                 Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
                     .frame(height: 30)
@@ -269,25 +293,34 @@ extension AudioTrackView {
                     .background{ Color.gray }
                     .cornerRadius(5)
             }
+            
             Spacer()
+            
         }
         .padding(.horizontal)
+        .dropDestination(for: String.self) { values, _ in
+            guard let item = values.first else { return true }
+            items.wrappedValue.append(item)
+            audioFiles.removeAll(where: {$0 == item })
+            return true
+        }
+
     }
     
     private func SongHeadingView(geo: GeometryProxy, name: String) -> some View {
-        ZStack {
-            
-            Rectangle()
-                .frame(height: geo.size.height*0.04)
-                .cornerRadius(6)
-                .foregroundColor(Color("textColor3"))
-            
-            Text(name)
-                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.leading, geo.size.width*0.03)
-        }
+        
+        Text(name)
+            .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.leading, geo.size.width*0.03)
+            .background {
+                Rectangle()
+                    .frame(height: geo.size.height*0.04)
+                    .cornerRadius(6)
+                    .foregroundColor(Color("textColor3"))
+            }
+        
     }
     
     private func DragFilesTextView(geo: GeometryProxy, name: String, count: Int) -> some View {
