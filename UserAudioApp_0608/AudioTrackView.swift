@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AudioTrackView: View {
+    
     // This array already exists as String array of song titles
     @State var tracks = ["Song One", "Song Two", "Song Three"]
     
@@ -26,7 +27,10 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var songFiles: [[Int:String]] = [[1:"Test"]]
+    @State private var song1Items: [(Int,String)] = []
+    @State private var song2Items: [(Int,String)] = []
+    @State private var song3Items: [(Int,String)] = [(1,"audio3")]
+    
     
     var body: some View {
         GeometryReader { geo in
@@ -206,47 +210,57 @@ extension AudioTrackView {
             
             VStack {
                 
-                ForEach(tracks.indices, id: \.self) { index in
-                    
-                    VStack {
-                        
-                        SongHeadingView(geo: geo, name: tracks[index])
-                        
-                        VStack {
-                            HStack {
-                                ForEach(songFiles[0].keys.sorted(), id: \.self) { key in
-                                  Text("\(key)")
-                                        .frame(height: 40)
-                                        .frame(width: geo.size.width/5)
-                                        .background{ Color.gray }
-                                        .cornerRadius(5)
-                                }
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            .padding(.vertical, 12)
-                            Spacer()
-                            
-                        }
-                        .frame(maxWidth: .greatestFiniteMagnitude)
-                        .frame(height: geo.size.height*0.15)
-                        .overlay(DragFilesTextView(geo: geo, name: tracks[index], files: songFiles[0]))
-                        .background(RectangleBackgroundView(geo: geo))
-                        .padding(.bottom, geo.size.height*0.02)
-                        
-                    }
-                    .dropDestination(for: String.self) { items, _ in
-                        songFiles[0][songFiles[0].keys.count + 1] = items.first ?? ""
-                        // tracks[index].append(contentsOf: items)
-                        return true
-                    }
-                    .padding(.horizontal)
-                }
+                SongsInfoView(geo: geo, title: tracks[0], items: $song1Items)
+                
+                SongsInfoView(geo: geo, title: tracks[1], items: $song2Items)
+                
+                SongsInfoView(geo: geo, title: tracks[2], items: $song3Items)
                 
             }
             
         }
     }
+    
+    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[(Int,String)]>) -> some View {
+        
+        VStack {
+            
+            SongHeadingView(geo: geo, name: title)
+            
+            VStack {
+                HStack {
+                    ForEach(items, id: \.self.0) { item in
+                        Text("\(item.wrappedValue.0)")
+                            .frame(height: 40)
+                            .frame(width: geo.size.width/5)
+                            .background{ Color.gray }
+                            .cornerRadius(5)
+                    }
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                Spacer()
+                
+            }
+            .frame(maxWidth: .greatestFiniteMagnitude)
+            .frame(height: geo.size.height*0.15)
+            .overlay(DragFilesTextView(geo: geo, name: title, count: items.count))
+            .background(RectangleBackgroundView(geo: geo))
+            .padding(.bottom, geo.size.height*0.02)
+            
+        }
+        .dropDestination(for: String.self) { values, _ in
+            guard let item = values.first else { return true }
+            items.wrappedValue.append((items.count+1,item))
+            audioFiles.removeAll(where: {$0 == item })
+            return true
+        }
+        .padding(.horizontal)
+
+    }
+    
+    
     
     private func SongHeadingView(geo: GeometryProxy, name: String) -> some View {
         ZStack {
@@ -264,12 +278,12 @@ extension AudioTrackView {
         }
     }
     
-    private func DragFilesTextView(geo: GeometryProxy, name: String, files: [Int:String]) -> some View {
+    private func DragFilesTextView(geo: GeometryProxy, name: String, count: Int) -> some View {
         Text("Drag your audio file here for\n<\(name)>")
             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
             .multilineTextAlignment(.center)
             .foregroundColor(Color("appColor7"))
-            .opacity(files.keys.count > 0 ? 0 : 1)
+            .opacity(count > 0 ? 0 : 1)
     }
     
     private func RectangleBackgroundView(geo: GeometryProxy) -> some View {
