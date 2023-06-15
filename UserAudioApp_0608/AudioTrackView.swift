@@ -284,21 +284,18 @@ extension AudioTrackView {
             
             SongHeadingView(geo: geo, name: title, songTitle: songTitle.wrappedValue)
             
-            VStack {
-                
-                Spacer()
+            VStack(spacing: 0) {
                 
                 //-------------------------------------------------- Row 1
                 
                 SongInfoRowView(geo: geo, items: items[0], songTitle: songTitle)
                 
-                DividerView()
+                Divider()
                 
                 //-------------------------------------------------- Row 2
                 
                 SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
                 
-                Spacer()
                 
             }
             .frame(maxWidth: .greatestFiniteMagnitude)
@@ -336,20 +333,14 @@ extension AudioTrackView {
                 Spacer()
                 
             }
-            .frame(height: 30)
-            .background(Color.black.opacity(0.01))
-            .dropDestination(for: String.self) { values, _ in
-                
-                guard let item = values.first else { return true }
-                guard items.count < 5 else {
-                    customAlertApple(title: "Max Items", message: "Only 5 items per row are allowed", yesButtonTitle: "Okay")
-                    return true
-                }
-                items.wrappedValue.append(item)
-                audioFiles.removeAll(where: {$0 == item })
-                return true
-            }
+            .frame(maxHeight: .greatestFiniteMagnitude)
             .padding(.horizontal)
+        }
+        .dropDestination(for: String.self) { values, _ in
+            guard let item = values.first else { return true }
+            items.wrappedValue.append(item)
+            audioFiles.removeAll(where: {$0 == item })
+            return true
         }
 
     }
