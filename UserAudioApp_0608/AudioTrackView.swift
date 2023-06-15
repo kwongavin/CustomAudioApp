@@ -32,12 +32,16 @@ struct AudioTrackView: View {
     
     @State private var song1Items: [[String]] = [[],[],[]]
     @State private var song2Items: [[String]] = [[],[],[]]
-    @State private var song3Items: [[String]] =
-    [
-        [ "audio1", "audio2", "audio3", "audio4", "audio5" ],
-        [ "audio11", "audio22", "audio33"],
-        []
-    ]
+    @State private var song3Items: [[String]] = [[],[],[]]
+//    [
+//        [ "audio1", "audio2", "audio3", "audio4", "audio5" ],
+//        [ "audio11", "audio22", "audio33"],
+//        []
+//    ]
+    
+    @State private var song1Title: String = ""
+    @State private var song2Title: String = ""
+    @State private var song3Title: String = ""
     
     var body: some View {
         
@@ -258,28 +262,28 @@ extension AudioTrackView {
                 
                 //-------------------------------------------------- Song 1
                 
-                SongsInfoView(geo: geo, title: tracks[0], items: $song1Items)
+                SongsInfoView(title: tracks[0], items: $song1Items, songTitle: $song1Title, geo: geo)
                 
                 //-------------------------------------------------- Song 2
                 
-                SongsInfoView(geo: geo, title: tracks[1], items: $song2Items)
+                SongsInfoView(title: tracks[1], items: $song2Items, songTitle: $song2Title, geo: geo)
                 
                 //-------------------------------------------------- Song 3
                 
-                SongsInfoView(geo: geo, title: tracks[2], items: $song3Items)
+                SongsInfoView(title: tracks[2], items: $song3Items, songTitle: $song3Title, geo: geo)
                 
             }
             
         }
     }
     
-    private func SongsInfoView(geo: GeometryProxy, title: String, items: Binding<[[String]]>) -> some View {
+    private func SongsInfoView(title: String, items: Binding<[[String]]>, songTitle: Binding<String>, geo: GeometryProxy) -> some View {
         
         VStack {
             
             //-------------------------------------------------- Heading
             
-            SongHeadingView(geo: geo, name: title)
+            SongHeadingView(geo: geo, name: title, songTitle: songTitle.wrappedValue)
             
             VStack {
                 
@@ -287,13 +291,13 @@ extension AudioTrackView {
                 
                 //-------------------------------------------------- Row 1
                 
-                SongInfoRowView(geo: geo, items: items[0])
+                SongInfoRowView(geo: geo, items: items[0], songTitle: songTitle)
                 
                 DividerView()
                 
                 //-------------------------------------------------- Row 2
                 
-                SongInfoRowView(geo: geo, items: items[1])
+                SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
                 
                 if showThirdRow {
                     
@@ -301,7 +305,7 @@ extension AudioTrackView {
                     
                     //-------------------------------------------------- Row 3
                     
-                    SongInfoRowView(geo: geo, items: items[1])
+                    SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
                     
                 }
 
@@ -320,7 +324,7 @@ extension AudioTrackView {
 
     }
     
-    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>) -> some View {
+    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>, songTitle: Binding<String>) -> some View {
         
         HStack {
             
@@ -329,7 +333,13 @@ extension AudioTrackView {
                 Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
                     .frame(height: 30)
                     .frame(maxWidth: geo.size.width/6.8)
+                    .background(Color.gray.opacity(songTitle.wrappedValue == item.wrappedValue ? 0.5 : 0))
                     .background{ AudioFilesRowBackgroundView() }
+                    .cornerRadius(10)
+                    .containerShape(Rectangle())
+                    .onTapGesture {
+                        songTitle.wrappedValue = item.wrappedValue
+                    }
                 
             }
             
@@ -353,19 +363,31 @@ extension AudioTrackView {
 
     }
     
-    private func SongHeadingView(geo: GeometryProxy, name: String) -> some View {
+    private func SongHeadingView(geo: GeometryProxy, name: String, songTitle: String) -> some View {
         
-        Text(name)
-            .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.leading, geo.size.width*0.03)
-            .background {
-                Rectangle()
-                    .frame(height: geo.size.height*0.04)
-                    .cornerRadius(6)
-                    .foregroundColor(Color("textColor3"))
-            }
+        HStack {
+            
+            Text(name)
+                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+                .foregroundColor(.white)
+            
+            Spacer()
+            
+            Text(songTitle)
+                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+                .foregroundColor(.white)
+
+            
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, geo.size.width*0.03)
+        .background {
+            Rectangle()
+                .frame(height: geo.size.height*0.04)
+                .cornerRadius(6)
+                .foregroundColor(Color("textColor3"))
+        }
+        
         
     }
     
