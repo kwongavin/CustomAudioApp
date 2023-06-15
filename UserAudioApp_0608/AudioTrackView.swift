@@ -30,14 +30,13 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var song1Items: [[String]] = [[],[],[]]
-    @State private var song2Items: [[String]] = [[],[],[]]
-    @State private var song3Items: [[String]] = [[],[],[]]
-//    [
-//        [ "audio1", "audio2", "audio3", "audio4", "audio5" ],
-//        [ "audio11", "audio22", "audio33"],
-//        []
-//    ]
+    @State private var song1Items: [[String]] = [[],[]]
+    @State private var song2Items: [[String]] = [[],[]]
+    @State private var song3Items: [[String]] = //[[],[]]
+    [
+        [ "audio1", "audio2", "audio3", "audio4", "audio5", "audio6", "audio7", "audio8" ],
+        [ "audio11", "audio22", "audio33"]
+    ]
     
     @State private var song1Title: String = ""
     @State private var song2Title: String = ""
@@ -299,17 +298,6 @@ extension AudioTrackView {
                 
                 SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
                 
-                if showThirdRow {
-                    
-                    DividerView()
-                    
-                    //-------------------------------------------------- Row 3
-                    
-                    SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
-                    
-                }
-
-                
                 Spacer()
                 
             }
@@ -326,40 +314,43 @@ extension AudioTrackView {
     
     private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>, songTitle: Binding<String>) -> some View {
         
-        HStack {
+        ScrollView(.horizontal, showsIndicators: false){
             
-            ForEach(items, id: \.self) { item in
+            HStack {
                 
-                Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
-                    .frame(height: 30)
-                    .frame(maxWidth: geo.size.width/6.8)
-                    .background(Color.gray.opacity(songTitle.wrappedValue == item.wrappedValue ? 0.5 : 0))
-                    .background{ AudioFilesRowBackgroundView() }
-                    .cornerRadius(10)
-                    .containerShape(Rectangle())
-                    .onTapGesture {
-                        songTitle.wrappedValue = item.wrappedValue
-                    }
+                ForEach(items, id: \.self) { item in
+                    
+                    Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
+                        .frame(height: 30)
+                        .frame(width: geo.size.width/6.8)
+                        .background(Color.gray.opacity(songTitle.wrappedValue == item.wrappedValue ? 0.5 : 0))
+                        .background{ AudioFilesRowBackgroundView() }
+                        .cornerRadius(10)
+                        .containerShape(Rectangle())
+                        .onTapGesture {
+                            songTitle.wrappedValue = item.wrappedValue
+                        }
+                    
+                }
+                
+                Spacer()
                 
             }
-            
-            Spacer()
-            
-        }
-        .frame(height: 30)
-        .background(Color.black.opacity(0.01))
-        .dropDestination(for: String.self) { values, _ in
-            
-            guard let item = values.first else { return true }
-            guard items.count < 5 else {
-                customAlertApple(title: "Max Items", message: "Only 5 items per row are allowed", yesButtonTitle: "Okay")
+            .frame(height: 30)
+            .background(Color.black.opacity(0.01))
+            .dropDestination(for: String.self) { values, _ in
+                
+                guard let item = values.first else { return true }
+                guard items.count < 5 else {
+                    customAlertApple(title: "Max Items", message: "Only 5 items per row are allowed", yesButtonTitle: "Okay")
+                    return true
+                }
+                items.wrappedValue.append(item)
+                audioFiles.removeAll(where: {$0 == item })
                 return true
             }
-            items.wrappedValue.append(item)
-            audioFiles.removeAll(where: {$0 == item })
-            return true
+            .padding(.horizontal)
         }
-        .padding(.horizontal)
 
     }
     
