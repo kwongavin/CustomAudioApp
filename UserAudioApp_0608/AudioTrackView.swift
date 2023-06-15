@@ -182,24 +182,30 @@ extension AudioTrackView {
             
             AudioFilesListBackgroundView()
             
-            VStack(spacing: geo.size.width*0.03) {
+            ScrollView {
                 
-                //-------------------------------------------------- List of Files
-                
-                ForEach(audioFiles.indices, id: \.self) { r in
+                LazyVStack(spacing: geo.size.width*0.03) {
                     
-                    //-------------------------------------------------- File Row View
+                    //-------------------------------------------------- List of Files
                     
-                    Text(audioFiles[r])
-                        .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
-                        .padding(8)
-                        .frame(maxWidth: .greatestFiniteMagnitude)
-                        .background{ AudioFilesRowBackgroundView() }
-                        .draggable(audioFiles[r]) { DragView(title: audioFiles[r], geo: geo) }
+                    ForEach(audioFiles.indices, id: \.self) { r in
+                        
+                        //-------------------------------------------------- File Row View
+                        
+                        Text(audioFiles[r])
+                            .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
+                            .padding(8)
+                            .frame(maxWidth: .greatestFiniteMagnitude)
+                            .background{ AudioFilesRowBackgroundView() }
+                            .draggable(audioFiles[r]) { DragView(title: audioFiles[r], geo: geo) }
+                    }
                 }
+                .padding()
+                
             }
-            .padding()
+            
         }
+        .frame(height: geo.size.height*0.2)
     }
     
     private func DragView(title: String, geo: GeometryProxy) -> some View {
