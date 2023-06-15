@@ -312,8 +312,8 @@ extension AudioTrackView {
             }
             .frame(maxWidth: .greatestFiniteMagnitude)
             .frame(height: geo.size.height*0.15)
-            .overlay(DragFilesTextView(geo: geo, name: title, count: items.count))
-            .background(RectangleBackgroundView(geo: geo))
+            .overlay(DragSongFilesView(geo: geo, name: title, count: items.count))
+            .background(SongInfoBackgroundView(geo: geo))
             .padding(.bottom, geo.size.height*0.02)
             
         }
@@ -363,7 +363,7 @@ extension AudioTrackView {
         
     }
     
-    private func DragFilesTextView(geo: GeometryProxy, name: String, count: Int) -> some View {
+    private func DragSongFilesView(geo: GeometryProxy, name: String, count: Int) -> some View {
         Text("Drag your audio file here for\n<\(name)>")
             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
             .multilineTextAlignment(.center)
@@ -371,14 +371,12 @@ extension AudioTrackView {
             .opacity(count > 0 ? 0 : 1)
     }
     
-    private func RectangleBackgroundView(geo: GeometryProxy) -> some View {
-        Rectangle()
-            .frame(height: geo.size.height*0.15)
-            .cornerRadius(15)
-            .shadow(color: Color("shadowColor"), radius: 10)
-            .foregroundColor(Color("mainColor"))
-            .opacity(0.5)
-    }
+}
+
+
+// MARK: - Audio Player Functions
+// MARK: -
+extension AudioTrackView {
     
     private func AudioPlayerView(geo: GeometryProxy) -> some View {
         Group {
@@ -427,7 +425,7 @@ extension AudioTrackView {
         }
         .padding()
     }
-    
+
 }
 
 
@@ -463,6 +461,15 @@ extension AudioTrackView {
             .opacity(0.8)
             .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
         
+    }
+    
+    private func SongInfoBackgroundView(geo: GeometryProxy) -> some View {
+        Rectangle()
+            .frame(height: geo.size.height*0.15)
+            .cornerRadius(15)
+            .shadow(color: Color("shadowColor"), radius: 10)
+            .foregroundColor(Color("mainColor"))
+            .opacity(0.5)
     }
     
 }
