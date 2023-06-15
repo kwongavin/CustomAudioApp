@@ -395,6 +395,7 @@ extension AudioTrackView {
             .multilineTextAlignment(.center)
             .foregroundColor(Color("appColor7"))
             .opacity(count > 0 ? 0 : 1)
+            .allowsHitTesting(false)
     }
     
 }
