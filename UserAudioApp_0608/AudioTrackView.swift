@@ -326,17 +326,19 @@ extension AudioTrackView {
         HStack {
             
             ForEach(items, id: \.self) { item in
+                
                 Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
                     .frame(height: 30)
                     .frame(maxWidth: geo.size.width/6.8)
-                    .background{ Color.gray }
-                    .cornerRadius(5)
+                    .background{ AudioFilesRowBackgroundView() }
+                
             }
             
             Spacer()
             
         }
-        .frame(maxWidth: .greatestFiniteMagnitude)
+        .frame(height: 30)
+        .background(Color.black.opacity(0.01))
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
             items.wrappedValue.append(item)
