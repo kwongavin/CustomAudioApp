@@ -464,6 +464,7 @@ extension AudioTrackView {
             .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
         
     }
+    
 }
 
 
@@ -486,7 +487,6 @@ extension AudioTrackView {
         }
         
     }
-
 
 }
 
