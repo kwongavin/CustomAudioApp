@@ -329,10 +329,11 @@ extension AudioTrackView {
                         .background(Color.gray.opacity(songTitle.wrappedValue == item.wrappedValue ? 0.5 : 0))
                         .background{ AudioFilesRowBackgroundView() }
                         .cornerRadius(10)
-                        .containerShape(Rectangle())
+                        .contentShape(Rectangle())
                         .onTapGesture {
                             songTitle.wrappedValue = item.wrappedValue
                         }
+                        .draggable(String(item.wrappedValue)) { DragBackView(item: item.wrappedValue, items: items.wrappedValue, geo: geo) }
                     
                 }
                 
@@ -385,6 +386,15 @@ extension AudioTrackView {
             .multilineTextAlignment(.center)
             .foregroundColor(Color("appColor7"))
             .opacity(count > 0 ? 0 : 1)
+    }
+    
+    private func DragBackView(item: String, items: [String], geo: GeometryProxy) -> some View {
+        
+        Text(item)
+            .frame(height: 30)
+            .frame(width: geo.size.width/6.8)
+            .background{ AudioFilesRowBackgroundView(cornerRadius: 0) }
+        
     }
     
 }
@@ -469,10 +479,10 @@ extension AudioTrackView {
         
     }
     
-    private func AudioFilesRowBackgroundView() -> some View {
+    private func AudioFilesRowBackgroundView(cornerRadius: CGFloat = 10) -> some View {
         
         Rectangle()
-            .cornerRadius(10)
+            .cornerRadius(cornerRadius)
             .foregroundColor(Color("bgColor4"))
             .opacity(0.8)
             .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
