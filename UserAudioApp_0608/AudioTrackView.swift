@@ -41,36 +41,27 @@ struct AudioTrackView: View {
     
     
     var body: some View {
+        
         GeometryReader { geo in
             
             ScrollView(showsIndicators: false) {
+                
                 VStack {
-                    Group {
-                        Divider()
-                        
-                        SelectedTracksTitleView(geo: geo)
-                        
-                        if errorMessage != nil {
-                            ErrorMessageView(geo: geo)
-                        }
-                        
-                        // This button will access user iCloud drive to select audio files
-                        if !audioFiles.isEmpty {
-                            AudioFilesListView(geo: geo)
-                        } else {
-                            SelectFilesButtonView(geo: geo)
-                        }
-                    }
-                    .padding()
+                    
+                    //-------------------------------------------------- Audio Files
+                    
+                    AudioFilesView(geo: geo)
+                    
+                    //-------------------------------------------------- Songs
                     
                     SongsListView(geo: geo)
                     
+                    //-------------------------------------------------- Audio Player
+                    
                     AudioPlayerView(geo: geo)
+                    
                 }
-                .onChange(of: audioFiles) { _ in
-                    print(audioFiles)
-                    print(fileURLs)
-                }
+                
             }
         }
     }
@@ -78,13 +69,61 @@ struct AudioTrackView: View {
 }
 
 
-// MARK: - Audio Track View Functions
+// MARK: - Audio Files View Functions
 // MARK: -
 extension AudioTrackView {
     
-    private func SelectedTracksTitleView(geo: GeometryProxy) -> some View {
+    private func AudioFilesView(geo: GeometryProxy) -> some View {
+        
+        Group {
+            
+            Divider()
+            
+            //-------------------------------------------------- Title
+            
+            AudioFilesTitleView(geo: geo)
+            
+            
+            if errorMessage != nil {
+                
+                //-------------------------------------------------- Error Message
+                
+                ErrorMessageView(geo: geo)
+            }
+            
+            
+            if !audioFiles.isEmpty {
+                
+                //-------------------------------------------------- Selected Files List
+                
+                AudioFilesListView(geo: geo)
+                
+            }
+            else {
+                
+                //-------------------------------------------------- Open iCloud Files Button
+                
+                SelectFilesButtonView(geo: geo)
+                
+            }
+            
+        }
+        .padding()
+        //-------------------------------------------------- Audio Files Imported
+        .fileImporter(isPresented: $openFiles, allowedContentTypes: [.audio], allowsMultipleSelection: true) { result in filesImported(result: result)}
+        //-------------------------------------------------- Audio Files Changed
+        .onChange(of: audioFiles) { _ in
+            print(audioFiles)
+            print(fileURLs)
+        }
+
+    }
+    
+    private func AudioFilesTitleView(geo: GeometryProxy) -> some View {
         
         HStack {
+            
+            //-------------------------------------------------- Title
             
             Text("AUDIO TRACKS")
                 .font(Font.custom("Futura Medium", size: geo.size.width*0.04))
@@ -93,6 +132,9 @@ extension AudioTrackView {
             if !audioFiles.isEmpty {
                 
                 HStack(spacing: geo.size.width*0.04) {
+                    
+                    //-------------------------------------------------- Remove Files Button
+                    
                     Button(action: {
                         audioFiles.removeAll()
                         fileURLs.removeAll()
@@ -102,6 +144,9 @@ extension AudioTrackView {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: geo.size.width*0.07)
                     })
+                    
+                    //-------------------------------------------------- Add Files Button
+                    
                     Button(action: {
                         openFiles.toggle()
                     }, label: {
@@ -116,91 +161,86 @@ extension AudioTrackView {
                 .foregroundColor(Color("appColor7"))
             }
         }
-        .fileImporter(
-            isPresented: $openFiles,
-            allowedContentTypes: [.audio],
-            allowsMultipleSelection: true
-        ) { result in
-            do {
-                let fileURLs = try result.get()
-                self.fileURLs = fileURLs
-                self.audioFiles = fileURLs.map { $0.lastPathComponent }
-            } catch {
-                errorMessage = error.localizedDescription
-            }
-        }
+    
     }
     
     private func ErrorMessageView(geo: GeometryProxy) -> some View {
+        
         Text(errorMessage!)
             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
             .foregroundColor(Color("appColor2"))
+        
     }
     
     private func AudioFilesListView(geo: GeometryProxy) -> some View {
         
         ZStack {
             
-            Rectangle()
-                .cornerRadius(15)
-                .foregroundColor(Color("mainColor"))
-                .opacity(0.5)
-                .shadow(color: Color("shadowColor"), radius: 10)
+            //-------------------------------------------------- Background Rectangle
+            
+            AudioFilesListBackgroundView()
             
             VStack(spacing: geo.size.width*0.03) {
                 
+                //-------------------------------------------------- List of Files
+                
                 ForEach(audioFiles.indices, id: \.self) { r in
                     
-                    ZStack {
-                        Rectangle()
-                            .cornerRadius(10)
-                            .foregroundColor(Color("bgColor4"))
-                            .opacity(0.8)
-                            .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
-                        Text(audioFiles[r])
-                            .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
-                            .padding(8)
-                    }
-                    .draggable(audioFiles[r]) {
-                        ZStack {
-                            Rectangle()
-                                .foregroundColor(Color("bgColor4"))
-                                .opacity(0.8)
-                            Text(audioFiles[r])
-                                .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
-                                .padding(8)
-                        }
-                    }
+                    //-------------------------------------------------- File Row View
+                    
+                    Text(audioFiles[r])
+                        .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
+                        .padding(8)
+                        .frame(maxWidth: .greatestFiniteMagnitude)
+                        .background{ AudioFilesRowBackgroundView() }
+                        .draggable(audioFiles[r]) { DragView(title: audioFiles[r], geo: geo) }
                 }
             }
             .padding()
         }
     }
     
+    private func DragView(title: String, geo: GeometryProxy) -> some View {
+        
+        Text(title)
+            .font(Font.custom("Avenir Heavy", size: geo.size.width*0.035))
+            .padding(8)
+            .background {
+                Rectangle()
+                    .foregroundColor(Color("bgColor4"))
+                    .opacity(0.8)
+            }
+        
+    }
+    
     private func SelectFilesButtonView(geo: GeometryProxy) -> some View {
+        
         Button(action: {
             openFiles.toggle()
         }, label: {
-            ZStack {
-                Rectangle()
-                    .frame(height: geo.size.height*0.2)
-                    .cornerRadius(15)
-                    .foregroundColor(Color("mainColor"))
-                    .opacity(0.5)
-                    .shadow(color: Color("shadowColor"), radius: 10)
+            
+            VStack(spacing: geo.size.height*0.02) {
                 
-                VStack(spacing: geo.size.height*0.02) {
-                    Image(systemName: "folder.badge.plus")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: geo.size.width*0.1)
-                        .bold()
-                    
-                    Text("Select Audio Files from iCloud Drive")
-                        .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
-                }
-                .foregroundColor(Color("appColor7"))
+                //-------------------------------------------------- Icon
+                
+                Image(systemName: "folder.badge.plus")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: geo.size.width*0.1)
+                    .bold()
+                
+                
+                //-------------------------------------------------- Text
+                
+                Text("Select Audio Files from iCloud Drive")
+                    .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+                
             }
+            .frame(maxWidth: .greatestFiniteMagnitude)
+            .frame(height: geo.size.height*0.2)
+            .background{ AudioFilesListBackgroundView() }
+            .foregroundColor(Color("appColor7"))
+            
         })
     }
     
@@ -404,6 +444,26 @@ extension AudioTrackView {
         }
         
     }
+    
+    private func AudioFilesListBackgroundView() -> some View {
+        
+        Rectangle()
+            .cornerRadius(15)
+            .foregroundColor(Color("mainColor"))
+            .opacity(0.5)
+            .shadow(color: Color("shadowColor"), radius: 10)
+        
+    }
+    
+    private func AudioFilesRowBackgroundView() -> some View {
+        
+        Rectangle()
+            .cornerRadius(10)
+            .foregroundColor(Color("bgColor4"))
+            .opacity(0.8)
+            .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
+        
+    }
 }
 
 
@@ -414,6 +474,19 @@ extension AudioTrackView {
     private func getIndex(title: String, items: [String]) -> String {
         "\((items.firstIndex(of: title) ?? -1) + 1)"
     }
+    
+    private func filesImported(result: Result<[URL], Error>) {
+        
+        do {
+            let fileURLs = try result.get()
+            self.fileURLs = fileURLs
+            self.audioFiles = fileURLs.map { $0.lastPathComponent }
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        
+    }
+
 
 }
 
