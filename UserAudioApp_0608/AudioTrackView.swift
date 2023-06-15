@@ -118,6 +118,12 @@ extension AudioTrackView {
             print(audioFiles)
             print(fileURLs)
         }
+        .dropDestination(for: String.self) { values, _ in
+            guard let item = values.first else { return true }
+            removeFromAllSongs(itemToRemove: item)
+            audioFiles.append(item)
+            return true
+        }
 
     }
     
@@ -333,7 +339,9 @@ extension AudioTrackView {
                         .onTapGesture {
                             songTitle.wrappedValue = item.wrappedValue
                         }
-                        .draggable(String(item.wrappedValue)) { DragBackView(item: item.wrappedValue, items: items.wrappedValue, geo: geo) }
+                        .draggable(String(item.wrappedValue)) {
+                            DragView(title: item.wrappedValue, geo: geo)
+                        }
                     
                 }
                 
@@ -345,6 +353,7 @@ extension AudioTrackView {
         }
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
+            removeFromAllSongs(itemToRemove: item)
             items.wrappedValue.append(item)
             audioFiles.removeAll(where: {$0 == item })
             return true
@@ -386,15 +395,6 @@ extension AudioTrackView {
             .multilineTextAlignment(.center)
             .foregroundColor(Color("appColor7"))
             .opacity(count > 0 ? 0 : 1)
-    }
-    
-    private func DragBackView(item: String, items: [String], geo: GeometryProxy) -> some View {
-        
-        Text(item)
-            .frame(height: 30)
-            .frame(width: geo.size.width/6.8)
-            .background{ AudioFilesRowBackgroundView(cornerRadius: 0) }
-        
     }
     
 }
@@ -524,6 +524,23 @@ extension AudioTrackView {
     private func getItemsCount(items: [[String]]) -> Int {
         items.flatMap({$0}).count
     }
+    
+    private func removeFromAllSongs(itemToRemove: String) {
+        
+        for i in 0..<song1Items.count {
+            song1Items[i].removeAll(where: { $0 == itemToRemove })
+        }
+        
+        for i in 0..<song2Items.count {
+            song2Items[i].removeAll(where: { $0 == itemToRemove })
+        }
+        
+        for i in 0..<song3Items.count {
+            song3Items[i].removeAll(where: { $0 == itemToRemove })
+        }
+        
+    }
+
 
 
 }
