@@ -39,7 +39,6 @@ struct AudioTrackView: View {
         []
     ]
     
-    
     var body: some View {
         
         GeometryReader { geo in
@@ -312,7 +311,7 @@ extension AudioTrackView {
             }
             .frame(maxWidth: .greatestFiniteMagnitude)
             .frame(height: geo.size.height*0.15)
-            .overlay(DragSongFilesView(geo: geo, name: title, count: items.count))
+            .overlay(DragSongFilesView(geo: geo, name: title, count: getItemsCount(items: items.wrappedValue)))
             .background(SongInfoBackgroundView(geo: geo))
             .padding(.bottom, geo.size.height*0.02)
             
@@ -340,7 +339,12 @@ extension AudioTrackView {
         .frame(height: 30)
         .background(Color.black.opacity(0.01))
         .dropDestination(for: String.self) { values, _ in
+            
             guard let item = values.first else { return true }
+            guard items.count < 5 else {
+                customAlertApple(title: "Max Items", message: "Only 5 items per row are allowed", yesButtonTitle: "Okay")
+                return true
+            }
             items.wrappedValue.append(item)
             audioFiles.removeAll(where: {$0 == item })
             return true
@@ -496,6 +500,11 @@ extension AudioTrackView {
         }
         
     }
+    
+    private func getItemsCount(items: [[String]]) -> Int {
+        items.flatMap({$0}).count
+    }
+
 
 }
 

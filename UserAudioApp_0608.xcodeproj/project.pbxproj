@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03CCBE0A2A3A975F00EC51AE /* Macros.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03CCBE092A3A975F00EC51AE /* Macros.swift */; };
 		867D53982A32997200EDC6BA /* CustomUserAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53972A32997200EDC6BA /* CustomUserAudio.swift */; };
 		867D539A2A32997200EDC6BA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53992A32997200EDC6BA /* ContentView.swift */; };
 		867D539C2A32997300EDC6BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 867D539B2A32997300EDC6BA /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		03CCBE092A3A975F00EC51AE /* Macros.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Macros.swift; sourceTree = "<group>"; };
 		867D53942A32997200EDC6BA /* UserAudioApp_0608.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UserAudioApp_0608.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		867D53972A32997200EDC6BA /* CustomUserAudio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomUserAudio.swift; sourceTree = "<group>"; };
 		867D53992A32997200EDC6BA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -56,6 +58,7 @@
 				867D53972A32997200EDC6BA /* CustomUserAudio.swift */,
 				867D53A52A32999600EDC6BA /* AudioTrackView.swift */,
 				867D53992A32997200EDC6BA /* ContentView.swift */,
+				03CCBE092A3A975F00EC51AE /* Macros.swift */,
 				867D539B2A32997300EDC6BA /* Assets.xcassets */,
 				867D539D2A32997300EDC6BA /* Preview Content */,
 			);
@@ -140,6 +143,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03CCBE0A2A3A975F00EC51AE /* Macros.swift in Sources */,
 				867D539A2A32997200EDC6BA /* ContentView.swift in Sources */,
 				867D53A62A32999600EDC6BA /* AudioTrackView.swift in Sources */,
 				867D53982A32997200EDC6BA /* CustomUserAudio.swift in Sources */,
