@@ -7,6 +7,12 @@
 
 import SwiftUI
 
+struct DragItem {
+    var id = UUID().uuidString
+    var audio1 = ""
+    var audio2 = ""
+}
+
 struct AudioTrackView: View {
     
     // This array already exists as String array of song titles
@@ -30,13 +36,13 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var song1Items: [[String]] = [[],[]]
-    @State private var song2Items: [[String]] = [[],[]]
-    @State private var song3Items: [[String]] = //[[],[]]
-    [
-        [ "audio1", "audio2", "audio3", "audio4", "audio5", "audio6", "audio7", "audio8" ],
-        [ "audio11", "audio22", "audio33"]
-    ]
+    @State private var song1Items: [[String]] = []
+    @State private var song2Items: [[String]] = []
+    @State private var song3Items: [[String]] = []
+//    [
+//        [ "audio1", "audio2", "audio3", "audio4", "audio5", "audio6", "audio7", "audio8" ],
+//        [ "audio11", "audio22", "audio33"]
+//    ]
     
     @State private var song1Title: String = ""
     @State private var song2Title: String = ""
@@ -298,7 +304,7 @@ extension AudioTrackView {
                 
             //-------------------------------------------------- List
                 
-            SongInfoRowView(geo: geo, items: items[0], songTitle: songTitle)
+            SongInfoRowView(geo: geo, items: items, songTitle: songTitle)
                 .frame(maxWidth: .greatestFiniteMagnitude)
                 .frame(height: geo.size.height*0.15)
                 .overlay(DragSongFilesView(geo: geo, name: title, count: getItemsCount(items: items.wrappedValue)))
@@ -310,7 +316,7 @@ extension AudioTrackView {
 
     }
     
-    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[String]>, songTitle: Binding<String>) -> some View {
+    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[[String]]>, songTitle: Binding<String>) -> some View {
         
         ScrollView(.horizontal, showsIndicators: false){
             
@@ -322,12 +328,13 @@ extension AudioTrackView {
                         
                         //-------------------------------------------------- Row 1
                         
-                        SongListRowView(geo: geo, item: item.wrappedValue, items: items, songTitle: songTitle)
+                        SongListRowView(geo: geo, item: item[0].wrappedValue, items: item, songTitle: songTitle)
                             .dropDestination(for: String.self) { values, _ in
                                 guard let receivedItem = values.first else { return true }
                                 if let index = items.wrappedValue.firstIndex(where: { $0 == item.wrappedValue }) {
                                     removeFromAllSongs(itemToRemove: receivedItem)
-                                    items.wrappedValue[index] += receivedItem
+                                    items.wrappedValue[index].append(receivedItem)
+//                                    items[1].wrappedValue[index] += receivedItem
                                 }
                                 return true
                             }
@@ -340,9 +347,11 @@ extension AudioTrackView {
                         
                         //-------------------------------------------------- Row 2
                         
-                        SongListRowView(geo: geo, item: item.wrappedValue, items: items, songTitle: songTitle)
-                            .frame(maxHeight: .greatestFiniteMagnitude)
-                            .background(Color.green)
+                        if item.wrappedValue.count > 1 {
+                            SongListRowView(geo: geo, item: item[1].wrappedValue, items: item, songTitle: songTitle)
+                                .frame(maxHeight: .greatestFiniteMagnitude)
+                                .background(Color.green)
+                        }
                         
                     }
                     .frame(maxHeight: .greatestFiniteMagnitude)
@@ -360,7 +369,7 @@ extension AudioTrackView {
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
             removeFromAllSongs(itemToRemove: item)
-            items.wrappedValue.append(item)
+            items.wrappedValue.append([item])
             return true
         }
 
