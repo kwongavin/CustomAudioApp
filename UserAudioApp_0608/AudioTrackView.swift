@@ -46,24 +46,27 @@ struct AudioTrackView: View {
         
         GeometryReader { geo in
             
-            ScrollView(showsIndicators: false) {
+            VStack {
                 
-                VStack {
+                //-------------------------------------------------- Audio Files
+                
+                AudioFilesView(geo: geo)
+                
+                ScrollView(showsIndicators: false) {
                     
-                    //-------------------------------------------------- Audio Files
-                    
-                    AudioFilesView(geo: geo)
-                    
-                    //-------------------------------------------------- Songs
-                    
-                    SongsListView(geo: geo)
-                    
-                    //-------------------------------------------------- Audio Player
-                    
-                    AudioPlayerView(geo: geo)
+                    VStack {
+                        
+                        //-------------------------------------------------- Songs
+                        
+                        SongsListView(geo: geo)
+                        
+                        //-------------------------------------------------- Audio Player
+                        
+                        AudioPlayerView(geo: geo)
+                        
+                    }
                     
                 }
-                
             }
         }
     }
@@ -77,9 +80,7 @@ extension AudioTrackView {
     
     private func AudioFilesView(geo: GeometryProxy) -> some View {
         
-        Group {
-            
-            Divider()
+        VStack {
             
             //-------------------------------------------------- Title
             
