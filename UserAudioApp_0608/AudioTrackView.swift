@@ -295,27 +295,15 @@ extension AudioTrackView {
             //-------------------------------------------------- Heading
             
             SongHeadingView(geo: geo, name: title, songTitle: songTitle.wrappedValue)
-            
-            VStack(spacing: 0) {
                 
-                //-------------------------------------------------- Row 1
+            //-------------------------------------------------- List
                 
-                SongInfoRowView(geo: geo, items: items[0], songTitle: songTitle)
-                
-                Divider()
-                
-                //-------------------------------------------------- Row 2
-                
-                Spacer()
-                //SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
-                
-                
-            }
-            .frame(maxWidth: .greatestFiniteMagnitude)
-            .frame(height: geo.size.height*0.15)
-            .overlay(DragSongFilesView(geo: geo, name: title, count: getItemsCount(items: items.wrappedValue)))
-            .background(SongInfoBackgroundView(geo: geo))
-            .padding(.bottom, geo.size.height*0.02)
+            SongInfoRowView(geo: geo, items: items[0], songTitle: songTitle)
+                .frame(maxWidth: .greatestFiniteMagnitude)
+                .frame(height: geo.size.height*0.15)
+                .overlay(DragSongFilesView(geo: geo, name: title, count: getItemsCount(items: items.wrappedValue)))
+                .background(SongInfoBackgroundView(geo: geo))
+                .padding(.bottom, geo.size.height*0.02)
             
         }
         .padding(.horizontal)
@@ -326,31 +314,40 @@ extension AudioTrackView {
         
         ScrollView(.horizontal, showsIndicators: false){
             
-            HStack {
+            LazyHStack {
                 
                 ForEach(items, id: \.self) { item in
                     
-                    Text(getIndex(title: item.wrappedValue, items: items.wrappedValue))
-                        .frame(height: 30)
-                        .frame(width: geo.size.width/6.8)
-                        .background(Color.gray.opacity(songTitle.wrappedValue == item.wrappedValue ? 0.5 : 0))
-                        .background{ AudioFilesRowBackgroundView() }
-                        .cornerRadius(10)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            songTitle.wrappedValue = item.wrappedValue
-                        }
-                        .draggable(String(item.wrappedValue)) {
-                            DragView(title: item.wrappedValue, geo: geo)
-                        }
-                        .dropDestination(for: String.self) { values, _ in
-                            guard let receivedItem = values.first else { return true }
-                            if let index = items.wrappedValue.firstIndex(where: { $0 == item.wrappedValue }) {
-                                removeFromAllSongs(itemToRemove: receivedItem)
-                                items.wrappedValue[index] += receivedItem
+                    VStack(spacing: 0) {
+                        
+                        //-------------------------------------------------- Row 1
+                        
+                        SongListRowView(geo: geo, item: item.wrappedValue, items: items, songTitle: songTitle)
+                            .dropDestination(for: String.self) { values, _ in
+                                guard let receivedItem = values.first else { return true }
+                                if let index = items.wrappedValue.firstIndex(where: { $0 == item.wrappedValue }) {
+                                    removeFromAllSongs(itemToRemove: receivedItem)
+                                    items.wrappedValue[index] += receivedItem
+                                }
+                                return true
                             }
-                            return true
-                        }
+                            .frame(maxHeight: .greatestFiniteMagnitude)
+                            .background(Color.blue)
+                        
+                        
+                        Divider()
+                        
+                        
+                        //-------------------------------------------------- Row 2
+                        
+                        SongListRowView(geo: geo, item: item.wrappedValue, items: items, songTitle: songTitle)
+                            .frame(maxHeight: .greatestFiniteMagnitude)
+                            .background(Color.green)
+                        
+                    }
+                    .frame(maxHeight: .greatestFiniteMagnitude)
+                    .background(Color.red)
+                    
                     
                 }
                 
@@ -367,6 +364,24 @@ extension AudioTrackView {
             return true
         }
 
+    }
+    
+    private func SongListRowView(geo: GeometryProxy, item: String, items: Binding<[String]>, songTitle: Binding<String>) -> some View {
+        
+        Text(getIndex(title: item, items: items.wrappedValue))
+            .frame(height: 30)
+            .frame(width: geo.size.width/6.8)
+            .background(Color.gray.opacity(songTitle.wrappedValue == item ? 0.5 : 0))
+            .background{ AudioFilesRowBackgroundView() }
+            .cornerRadius(10)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                songTitle.wrappedValue = item
+            }
+            .draggable(String(item)) {
+                DragView(title: item, geo: geo)
+            }
+        
     }
     
     private func SongHeadingView(geo: GeometryProxy, name: String, songTitle: String) -> some View {
