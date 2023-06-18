@@ -122,7 +122,6 @@ extension AudioTrackView {
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
             removeFromAllSongs(itemToRemove: item)
-            audioFiles.append(item)
             return true
         }
 
@@ -307,7 +306,8 @@ extension AudioTrackView {
                 
                 //-------------------------------------------------- Row 2
                 
-                SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
+                Spacer()
+                //SongInfoRowView(geo: geo, items: items[1], songTitle: songTitle)
                 
                 
             }
@@ -343,6 +343,14 @@ extension AudioTrackView {
                         .draggable(String(item.wrappedValue)) {
                             DragView(title: item.wrappedValue, geo: geo)
                         }
+                        .dropDestination(for: String.self) { values, _ in
+                            guard let receivedItem = values.first else { return true }
+                            if let index = items.wrappedValue.firstIndex(where: { $0 == item.wrappedValue }) {
+                                removeFromAllSongs(itemToRemove: receivedItem)
+                                items.wrappedValue[index] += receivedItem
+                            }
+                            return true
+                        }
                     
                 }
                 
@@ -356,7 +364,6 @@ extension AudioTrackView {
             guard let item = values.first else { return true }
             removeFromAllSongs(itemToRemove: item)
             items.wrappedValue.append(item)
-            audioFiles.removeAll(where: {$0 == item })
             return true
         }
 
@@ -541,9 +548,9 @@ extension AudioTrackView {
             song3Items[i].removeAll(where: { $0 == itemToRemove })
         }
         
+        audioFiles.removeAll(where: { $0 == itemToRemove})
+        
     }
-
-
 
 }
 
