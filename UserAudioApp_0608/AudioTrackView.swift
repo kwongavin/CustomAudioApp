@@ -311,7 +311,6 @@ extension AudioTrackView {
         
     }
     
-    
     private func SectionListView(geo: GeometryProxy, sectionInfo: Binding<SectionInfo>) -> some View {
         
         ScrollView(.horizontal, showsIndicators: false){
