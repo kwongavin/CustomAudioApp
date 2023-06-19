@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct SectionInfo: Identifiable {
+struct SectionInfo: Identifiable, Equatable, Codable {
     
     var id = UUID().uuidString
     var title: String
     var tracks: [Track] = []
     var selectedTrack: String?
     
-    struct Track: Identifiable, Equatable {
+    struct Track: Identifiable, Equatable, Codable {
         var id = UUID().uuidString
         var items: [String] = []
     }
@@ -353,10 +353,14 @@ extension AudioTrackView {
                     .frame(maxHeight: .greatestFiniteMagnitude)
                     .dropDestination(for: String.self) { values, _ in
                         guard let receivedItem = values.first else { return true }
+                        let trackId = track.wrappedValue.id
+                        removeFromAllSongs(itemToRemove: receivedItem)
                         
-                        if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0 == track.wrappedValue }) {
+                        print("receivedItem: \(receivedItem)")
+                        print("section info: \(sectionInfo.wrappedValue.toDictionary().toString())")
+                        
+                        if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0.id == trackId }) {
                             guard sectionInfo.wrappedValue.tracks[index].items.count < 2 else { return false }
-                            removeFromAllSongs(itemToRemove: receivedItem)
                             sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
                         }
                         return true
@@ -562,14 +566,20 @@ extension AudioTrackView {
     
     private func removeFromAllSongs(itemToRemove: String) {
         
-        // remove from all sections
-        for sectionIndex in  0 ..< self.sections.count {
+        // looping through index of every section
+        for sectionIndex in 0 ..< self.sections.count {
+            
+            // looping through index of every track
             for trackIndex in 0 ..< sections[sectionIndex].tracks.count {
+                
+                // remove all items matching the name of the song to remove
                 sections[sectionIndex].tracks[trackIndex].items.removeAll(where: { $0 == itemToRemove } )
-                if sections[sectionIndex].tracks[trackIndex].items.count == 0 {
-                    sections[sectionIndex].tracks.remove(at: trackIndex)
-                }
+                
             }
+            
+            // remove the tracks which have empty tracks
+            sections[sectionIndex].tracks.removeAll(where: {$0.items.count == 0})
+            
         }
         
         // remove from audio files
