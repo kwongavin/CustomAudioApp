@@ -326,14 +326,6 @@ extension AudioTrackView {
                             geo: geo,
                             trackTitle: track.items[0].wrappedValue,
                             sectionInfo: sectionInfo)
-                            .dropDestination(for: String.self) { values, _ in
-                                guard let receivedItem = values.first else { return true }
-                                if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0 == track.wrappedValue }) {
-                                    removeFromAllSongs(itemToRemove: receivedItem)
-                                    sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
-                                }
-                                return true
-                            }
                             .frame(maxHeight: .greatestFiniteMagnitude)
                             .background(Color.blue)
                         
@@ -351,10 +343,25 @@ extension AudioTrackView {
                                 .frame(maxHeight: .greatestFiniteMagnitude)
                                 .background(Color.green)
                         }
+                        else {
+                            Text("")
+                                .opacity(0.01)
+                                .frame(maxHeight: .greatestFiniteMagnitude)
+                                .background(Color.green)
+                            
+                        }
                         
                     }
                     .frame(maxHeight: .greatestFiniteMagnitude)
                     .background(Color.red)
+                    .dropDestination(for: String.self) { values, _ in
+                        guard let receivedItem = values.first else { return true }
+                        if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0 == track.wrappedValue }) {
+                            removeFromAllSongs(itemToRemove: receivedItem)
+                            sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
+                        }
+                        return true
+                    }
                     
                     
                 }
@@ -562,6 +569,9 @@ extension AudioTrackView {
         for sectionIndex in  0 ..< self.sections.count {
             for trackIndex in 0 ..< sections[sectionIndex].tracks.count {
                 sections[sectionIndex].tracks[trackIndex].items.removeAll(where: { $0 == itemToRemove } )
+                if sections[sectionIndex].tracks[trackIndex].items.count == 0 {
+                    sections[sectionIndex].tracks.remove(at: trackIndex)
+                }
             }
         }
         
