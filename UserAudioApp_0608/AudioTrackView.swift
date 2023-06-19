@@ -7,10 +7,18 @@
 
 import SwiftUI
 
-struct DragItem {
+struct SectionInfo: Identifiable {
+    
     var id = UUID().uuidString
-    var audio1 = ""
-    var audio2 = ""
+    var title: String
+    var tracks: [Track] = []
+    var selectedTrack: String?
+    
+    struct Track: Identifiable, Equatable {
+        var id = UUID().uuidString
+        var items: [String] = []
+    }
+    
 }
 
 struct AudioTrackView: View {
@@ -44,9 +52,15 @@ struct AudioTrackView: View {
 //        [ "audio11", "audio22", "audio33"]
 //    ]
     
-    @State private var song1Title: String = ""
-    @State private var song2Title: String = ""
-    @State private var song3Title: String = ""
+//    @State private var song1Title: String = ""
+//    @State private var song2Title: String = ""
+//    @State private var song3Title: String = ""
+    
+    @State private var sections: [SectionInfo] = [
+        SectionInfo(title: "Song 1"),
+        SectionInfo(title: "Song 2"),
+        SectionInfo(title: "Song 3")
+    ]
     
     var body: some View {
         
@@ -64,7 +78,7 @@ struct AudioTrackView: View {
                         
                         //-------------------------------------------------- Songs
                         
-                        SongsListView(geo: geo)
+                        SectionView(geo: geo)
                         
                         //-------------------------------------------------- Audio Player
                         
@@ -126,8 +140,9 @@ extension AudioTrackView {
             print(fileURLs)
         }
         .dropDestination(for: String.self) { values, _ in
-            guard let item = values.first else { return true }
-            removeFromAllSongs(itemToRemove: item)
+            guard let receivedItem = values.first else { return true }
+            removeFromAllSongs(itemToRemove: receivedItem)
+            audioFiles.append(receivedItem)
             return true
         }
 
@@ -271,70 +286,64 @@ extension AudioTrackView {
 // MARK: -
 extension AudioTrackView {
     
-    private func SongsListView(geo: GeometryProxy) -> some View {
+    private func SectionView(geo: GeometryProxy) -> some View {
         
         Group {
             
             VStack {
                 
-                //-------------------------------------------------- Song 1
-                
-                SongsInfoView(title: tracks[0], items: $song1Items, songTitle: $song1Title, geo: geo)
-                
-                //-------------------------------------------------- Song 2
-                
-                SongsInfoView(title: tracks[1], items: $song2Items, songTitle: $song2Title, geo: geo)
-                
-                //-------------------------------------------------- Song 3
-                
-                SongsInfoView(title: tracks[2], items: $song3Items, songTitle: $song3Title, geo: geo)
+                ForEach($sections) { sectionInfo in
+                                        
+                    VStack {
+                        
+                        //-------------------------------------------------- Heading
+                        
+                        SongHeadingView(geo: geo, name: sectionInfo.title.wrappedValue, songTitle: sectionInfo.selectedTrack.wrappedValue ?? "")
+                            
+                        //-------------------------------------------------- List
+                            
+                        SectionListView(geo: geo, sectionInfo: sectionInfo)
+                            .frame(maxWidth: .greatestFiniteMagnitude)
+                            .frame(height: geo.size.height*0.15)
+                            .overlay(DragSongFilesView(geo: geo, name: sectionInfo.title.wrappedValue, count: sectionInfo.tracks.wrappedValue.count))
+                            .background(SongInfoBackgroundView(geo: geo))
+                            .padding(.bottom, geo.size.height*0.02)
+                        
+                    }
+                    .padding(.horizontal)
+
+                    
+                }
                 
             }
             
         }
-    }
-    
-    private func SongsInfoView(title: String, items: Binding<[[String]]>, songTitle: Binding<String>, geo: GeometryProxy) -> some View {
         
-        VStack {
-            
-            //-------------------------------------------------- Heading
-            
-            SongHeadingView(geo: geo, name: title, songTitle: songTitle.wrappedValue)
-                
-            //-------------------------------------------------- List
-                
-            SongInfoRowView(geo: geo, items: items, songTitle: songTitle)
-                .frame(maxWidth: .greatestFiniteMagnitude)
-                .frame(height: geo.size.height*0.15)
-                .overlay(DragSongFilesView(geo: geo, name: title, count: getItemsCount(items: items.wrappedValue)))
-                .background(SongInfoBackgroundView(geo: geo))
-                .padding(.bottom, geo.size.height*0.02)
-            
-        }
-        .padding(.horizontal)
-
     }
     
-    private func SongInfoRowView(geo: GeometryProxy, items: Binding<[[String]]>, songTitle: Binding<String>) -> some View {
+    
+    private func SectionListView(geo: GeometryProxy, sectionInfo: Binding<SectionInfo>) -> some View {
         
         ScrollView(.horizontal, showsIndicators: false){
             
             LazyHStack {
                 
-                ForEach(items, id: \.self) { item in
+                ForEach(sectionInfo.tracks) { track in
                     
                     VStack(spacing: 0) {
                         
                         //-------------------------------------------------- Row 1
                         
-                        SongListRowView(geo: geo, item: item[0].wrappedValue, items: item, songTitle: songTitle)
+//                        SongListRowView(geo: geo, item: track[0].wrappedValue, items: track, songTitle: songTitle)
+                        SectionListRowView(
+                            geo: geo,
+                            trackTitle: track.items[0].wrappedValue,
+                            sectionInfo: sectionInfo)
                             .dropDestination(for: String.self) { values, _ in
                                 guard let receivedItem = values.first else { return true }
-                                if let index = items.wrappedValue.firstIndex(where: { $0 == item.wrappedValue }) {
+                                if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0 == track.wrappedValue }) {
                                     removeFromAllSongs(itemToRemove: receivedItem)
-                                    items.wrappedValue[index].append(receivedItem)
-//                                    items[1].wrappedValue[index] += receivedItem
+                                    sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
                                 }
                                 return true
                             }
@@ -347,8 +356,11 @@ extension AudioTrackView {
                         
                         //-------------------------------------------------- Row 2
                         
-                        if item.wrappedValue.count > 1 {
-                            SongListRowView(geo: geo, item: item[1].wrappedValue, items: item, songTitle: songTitle)
+                        if track.wrappedValue.items.count > 1 {
+                            SectionListRowView(
+                                geo: geo,
+                                trackTitle: track.items[1].wrappedValue,
+                                sectionInfo: sectionInfo)
                                 .frame(maxHeight: .greatestFiniteMagnitude)
                                 .background(Color.green)
                         }
@@ -369,26 +381,26 @@ extension AudioTrackView {
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
             removeFromAllSongs(itemToRemove: item)
-            items.wrappedValue.append([item])
+            sectionInfo.wrappedValue.tracks.append(SectionInfo.Track(items: [item]))
             return true
         }
 
     }
     
-    private func SongListRowView(geo: GeometryProxy, item: String, items: Binding<[String]>, songTitle: Binding<String>) -> some View {
+    private func SectionListRowView(geo: GeometryProxy, trackTitle: String, sectionInfo: Binding<SectionInfo>) -> some View {
         
-        Text(getIndex(title: item, items: items.wrappedValue))
+        Text(getIndex(trackTitle: trackTitle, tracks: sectionInfo.wrappedValue.tracks))
             .frame(height: 30)
             .frame(width: geo.size.width/6.8)
-            .background(Color.gray.opacity(songTitle.wrappedValue == item ? 0.5 : 0))
+            .background(Color.gray.opacity(trackTitle == sectionInfo.wrappedValue.selectedTrack ? 0.5 : 0))
             .background{ AudioFilesRowBackgroundView() }
             .cornerRadius(10)
             .contentShape(Rectangle())
             .onTapGesture {
-                songTitle.wrappedValue = item
+                sectionInfo.wrappedValue.selectedTrack = trackTitle
             }
-            .draggable(String(item)) {
-                DragView(title: item, geo: geo)
+            .draggable(String(trackTitle)) {
+                DragView(title: trackTitle, geo: geo)
             }
         
     }
@@ -538,8 +550,9 @@ extension AudioTrackView {
 // MARK: -
 extension AudioTrackView {
     
-    private func getIndex(title: String, items: [String]) -> String {
-        "\((items.firstIndex(of: title) ?? -1) + 1)"
+    private func getIndex(trackTitle: String, tracks: [SectionInfo.Track]) -> String {
+        let index = tracks.firstIndex(where: { $0.items.contains(trackTitle)}) ?? -1
+        return "\(index + 1)"
     }
     
     private func filesImported(result: Result<[URL], Error>) {
@@ -554,25 +567,19 @@ extension AudioTrackView {
         
     }
     
-    private func getItemsCount(items: [[String]]) -> Int {
-        items.flatMap({$0}).count
-    }
-    
     private func removeFromAllSongs(itemToRemove: String) {
         
-        for i in 0..<song1Items.count {
-            song1Items[i].removeAll(where: { $0 == itemToRemove })
+        // TODO: - pass section to increase performance of for loop
+        
+        // remove from all sections
+        for sectionIndex in  0 ..< self.sections.count {
+            for trackIndex in 0 ..< sections[sectionIndex].tracks.count {
+                sections[sectionIndex].tracks[trackIndex].items.removeAll(where: { $0 == itemToRemove } )
+            }
         }
         
-        for i in 0..<song2Items.count {
-            song2Items[i].removeAll(where: { $0 == itemToRemove })
-        }
-        
-        for i in 0..<song3Items.count {
-            song3Items[i].removeAll(where: { $0 == itemToRemove })
-        }
-        
-        audioFiles.removeAll(where: { $0 == itemToRemove})
+        // remove from audio files
+        audioFiles.removeAll(where: { $0 == itemToRemove })
         
     }
 
