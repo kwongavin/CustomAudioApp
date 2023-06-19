@@ -44,7 +44,6 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    
     @State private var sections: [SectionInfo] = [
         SectionInfo(title: "Song 1"),
         SectionInfo(title: "Song 2"),
