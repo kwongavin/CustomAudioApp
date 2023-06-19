@@ -44,12 +44,16 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var sections: [SectionInfo] = [
-        SectionInfo(title: "Song 1"),
-        SectionInfo(title: "Song 2"),
-        SectionInfo(title: "Song 3"),
-        SectionInfo(title: "Song 4")
-    ]
+    @State private var sections: [SectionInfo] = []
+//    [
+//        SectionInfo(title: "Song 1"),
+//        SectionInfo(title: "Song 2"),
+//        SectionInfo(title: "Song 3"),
+//        SectionInfo(title: "Song 4")
+//    ]
+    
+    @State private var isOnAppearCalled = false // for calling on appear only once
+    
     
     var body: some View {
         
@@ -78,6 +82,20 @@ struct AudioTrackView: View {
                 }
             }
         }
+        .onAppear(perform: {
+            
+            guard isOnAppearCalled == false else { return }
+            isOnAppearCalled = true
+            
+            var sec: [SectionInfo] = []
+            
+            for track in tracks {
+                sec.append(SectionInfo(title: track))
+            }
+            
+            self.sections = sec
+
+        })
     }
     
 }
