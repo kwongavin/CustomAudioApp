@@ -327,7 +327,6 @@ extension AudioTrackView {
                             trackTitle: track.items[0].wrappedValue,
                             sectionInfo: sectionInfo)
                             .frame(maxHeight: .greatestFiniteMagnitude)
-                            .background(Color.blue)
                         
                         
                         Divider()
@@ -341,22 +340,22 @@ extension AudioTrackView {
                                 trackTitle: track.items[1].wrappedValue,
                                 sectionInfo: sectionInfo)
                                 .frame(maxHeight: .greatestFiniteMagnitude)
-                                .background(Color.green)
                         }
                         else {
                             Text("")
-                                .opacity(0.01)
                                 .frame(maxHeight: .greatestFiniteMagnitude)
-                                .background(Color.green)
-                            
+                                .frame(width: geo.size.width/6.8)
+                                .background(Color.red.opacity(0.01))
+                                .opacity(0.01)
                         }
                         
                     }
                     .frame(maxHeight: .greatestFiniteMagnitude)
-                    .background(Color.red)
                     .dropDestination(for: String.self) { values, _ in
                         guard let receivedItem = values.first else { return true }
+                        
                         if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0 == track.wrappedValue }) {
+                            guard sectionInfo.wrappedValue.tracks[index].items.count < 2 else { return false }
                             removeFromAllSongs(itemToRemove: receivedItem)
                             sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
                         }
@@ -562,8 +561,6 @@ extension AudioTrackView {
     }
     
     private func removeFromAllSongs(itemToRemove: String) {
-        
-        // TODO: - pass section to increase performance of for loop
         
         // remove from all sections
         for sectionIndex in  0 ..< self.sections.count {
