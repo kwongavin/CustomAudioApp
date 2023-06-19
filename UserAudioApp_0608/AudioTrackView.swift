@@ -44,22 +44,12 @@ struct AudioTrackView: View {
     // Error messages
     @State private var errorMessage: String?
     
-    @State private var song1Items: [[String]] = []
-    @State private var song2Items: [[String]] = []
-    @State private var song3Items: [[String]] = []
-//    [
-//        [ "audio1", "audio2", "audio3", "audio4", "audio5", "audio6", "audio7", "audio8" ],
-//        [ "audio11", "audio22", "audio33"]
-//    ]
-    
-//    @State private var song1Title: String = ""
-//    @State private var song2Title: String = ""
-//    @State private var song3Title: String = ""
     
     @State private var sections: [SectionInfo] = [
         SectionInfo(title: "Song 1"),
         SectionInfo(title: "Song 2"),
-        SectionInfo(title: "Song 3")
+        SectionInfo(title: "Song 3"),
+        SectionInfo(title: "Song 4")
     ]
     
     var body: some View {
@@ -334,7 +324,6 @@ extension AudioTrackView {
                         
                         //-------------------------------------------------- Row 1
                         
-//                        SongListRowView(geo: geo, item: track[0].wrappedValue, items: track, songTitle: songTitle)
                         SectionListRowView(
                             geo: geo,
                             trackTitle: track.items[0].wrappedValue,
