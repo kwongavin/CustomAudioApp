@@ -590,6 +590,11 @@ extension AudioTrackView {
             // looping through index of every track
             for trackIndex in 0 ..< sections[sectionIndex].tracks.count {
                 
+                // remove selected track
+                if itemToRemove == sections[sectionIndex].selectedTrack {
+                    sections[sectionIndex].selectedTrack = ""
+                }
+                
                 // remove all items matching the name of the song to remove
                 sections[sectionIndex].tracks[trackIndex].items.removeAll(where: { $0 == itemToRemove } )
                 
