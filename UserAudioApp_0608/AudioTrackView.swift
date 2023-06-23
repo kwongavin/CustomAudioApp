@@ -148,7 +148,7 @@ extension AudioTrackView {
         }
         .dropDestination(for: String.self) { values, _ in
             guard let receivedItem = values.first else { return true }
-            removeFromAllSongs(itemToRemove: receivedItem)
+            removeFromAllSections(itemToRemove: receivedItem)
             audioFiles.append(receivedItem)
             return true
         }
@@ -372,15 +372,25 @@ extension AudioTrackView {
                     .dropDestination(for: String.self) { values, _ in
                         guard let receivedItem = values.first else { return true }
                         let trackId = track.wrappedValue.id
-                        removeFromAllSongs(itemToRemove: receivedItem)
+                        
+                        // get index of the drop zone
+                        guard let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0.id == trackId }) else { return false }
+                        
+                        // check if the index where item is gonna be dropped already had 2 elements
+                        guard sectionInfo.wrappedValue.tracks[index].items.count < 2 else { return false }
+                        
+                        // remove dragged item from all sections
+                        removeFromAllSections(itemToRemove: receivedItem)
                         
                         print("receivedItem: \(receivedItem)")
                         print("section info: \(sectionInfo.wrappedValue.toDictionary().toString())")
                         
-                        if let index = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0.id == trackId }) {
-                            guard sectionInfo.wrappedValue.tracks[index].items.count < 2 else { return false }
-                            sectionInfo.wrappedValue.tracks[index].items.append(receivedItem)
-                        }
+                        // get new index of the drop zone
+                        guard let newIndex = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0.id == trackId }) else { return false }
+                        
+                        // add item to the drop zone index
+                        sectionInfo.wrappedValue.tracks[newIndex].items.append(receivedItem)
+                        
                         return true
                     }
                     
@@ -395,7 +405,7 @@ extension AudioTrackView {
         }
         .dropDestination(for: String.self) { values, _ in
             guard let item = values.first else { return true }
-            removeFromAllSongs(itemToRemove: item)
+            removeFromAllSections(itemToRemove: item)
             sectionInfo.wrappedValue.tracks.append(SectionInfo.Track(items: [item]))
             return true
         }
@@ -582,7 +592,7 @@ extension AudioTrackView {
         
     }
     
-    private func removeFromAllSongs(itemToRemove: String) {
+    private func removeFromAllSections(itemToRemove: String) {
         
         // looping through index of every section
         for sectionIndex in 0 ..< self.sections.count {
