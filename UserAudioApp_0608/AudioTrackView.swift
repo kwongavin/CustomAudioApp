@@ -24,7 +24,7 @@ struct SectionInfo: Identifiable, Equatable, Codable {
 struct AudioTrackView: View {
     
     // This array already exists as String array of song titles
-    @State var tracks = ["Song One", "Song Two", "Song Three"]
+    @State var tracks = ["test1", "test2"]
     
     // This array will save the newly downloaded audio file names
     @State var audioFiles: [String] = []
@@ -138,7 +138,7 @@ extension AudioTrackView {
             }
             
         }
-        .padding()
+        .padding([.horizontal, .top])
         //-------------------------------------------------- Audio Files Imported
         .fileImporter(isPresented: $openFiles, allowedContentTypes: [.audio], allowsMultipleSelection: true) { result in filesImported(result: result)}
         //-------------------------------------------------- Audio Files Changed
@@ -323,6 +323,7 @@ extension AudioTrackView {
                 }
                 
             }
+            .padding(.top)
             
         }
         
