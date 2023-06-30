@@ -23,8 +23,10 @@ struct SectionInfo: Identifiable, Equatable, Codable {
 
 struct AudioTrackView: View {
     
+    @EnvironmentObject var accountModel: AccountModel
+    
     // This array already exists as String array of song titles
-    @State var tracks = ["test1", "test2"]
+//    @State var tracks = ["test1", "test2"]
     
     // This array will save the newly downloaded audio file names
     @State var audioFiles: [String] = []
@@ -89,13 +91,22 @@ struct AudioTrackView: View {
             
             var sec: [SectionInfo] = []
             
-            for track in tracks {
+            for track in accountModel.tracks {
                 sec.append(SectionInfo(title: track))
             }
             
             self.sections = sec
 
         })
+        .onChange(of: accountModel.tracks) { newValue in
+            var sec: [SectionInfo] = []
+            
+            for track in accountModel.tracks {
+                sec.append(SectionInfo(title: track))
+            }
+            
+            self.sections = sec
+        }
     }
     
 }
@@ -164,6 +175,7 @@ extension AudioTrackView {
             Text("AUDIO TRACKS")
                 .font(Font.custom("Futura Medium", size: geo.size.width*0.04))
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom)
             
             if !audioFiles.isEmpty {
                 
@@ -385,6 +397,7 @@ extension AudioTrackView {
                         
                         print("receivedItem: \(receivedItem)")
                         print("section info: \(sectionInfo.wrappedValue.toDictionary().toString())")
+                        print(sectionInfo.wrappedValue)
                         
                         // get new index of the drop zone
                         guard let newIndex = sectionInfo.wrappedValue.tracks.firstIndex(where: { $0.id == trackId }) else { return false }
@@ -435,18 +448,19 @@ extension AudioTrackView {
         
         HStack {
             
-            Text(name)
+            Text(name) // Song Title
                 .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
                 .foregroundColor(.white)
             
             Spacer()
             
-            Text(songTitle)
-                .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
+            Text(songTitle) // File Name
+                .font(Font.custom("Avenir", size: geo.size.width*0.035))
                 .foregroundColor(.white)
 
             
         }
+        .frame(height: geo.size.height*0.04)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, geo.size.width*0.03)
         .background {
@@ -460,7 +474,7 @@ extension AudioTrackView {
     }
     
     private func DragSongFilesView(geo: GeometryProxy, name: String, count: Int) -> some View {
-        Text("Drag your audio file here for\n<\(name)>")
+        Text("Drag Audio Files Here for\n<\(name)>")
             .font(Font.custom("Avenir Roman", size: geo.size.width*0.04))
             .multilineTextAlignment(.center)
             .foregroundColor(Color("appColor7"))
@@ -556,7 +570,7 @@ extension AudioTrackView {
             .cornerRadius(cornerRadius)
             .foregroundColor(Color("bgColor4"))
             .opacity(0.8)
-            .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
+//            .shadow(color: Color("selectedColor"), radius: 0.1, x: 2, y: 3)
         
     }
     
@@ -629,5 +643,6 @@ extension AudioTrackView {
 struct AudioTrackView_Previews: PreviewProvider {
     static var previews: some View {
         AudioTrackView()
+            .environmentObject(AccountModel())
     }
 }

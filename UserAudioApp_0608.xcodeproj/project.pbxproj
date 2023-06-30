@@ -14,6 +14,7 @@
 		867D539C2A32997300EDC6BA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 867D539B2A32997300EDC6BA /* Assets.xcassets */; };
 		867D539F2A32997300EDC6BA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 867D539E2A32997300EDC6BA /* Preview Assets.xcassets */; };
 		867D53A62A32999600EDC6BA /* AudioTrackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 867D53A52A32999600EDC6BA /* AudioTrackView.swift */; };
+		8689CF282A4F3BFA00950D0F /* AccountModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8689CF272A4F3BFA00950D0F /* AccountModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		867D539B2A32997300EDC6BA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		867D539E2A32997300EDC6BA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		867D53A52A32999600EDC6BA /* AudioTrackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioTrackView.swift; sourceTree = "<group>"; };
+		8689CF272A4F3BFA00950D0F /* AccountModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			children = (
 				867D53972A32997200EDC6BA /* CustomUserAudio.swift */,
 				867D53A52A32999600EDC6BA /* AudioTrackView.swift */,
+				8689CF272A4F3BFA00950D0F /* AccountModel.swift */,
 				03A8535C2A40AC470045B055 /* Extensions.swift */,
 				867D53992A32997200EDC6BA /* ContentView.swift */,
 				03CCBE092A3A975F00EC51AE /* Macros.swift */,
@@ -147,6 +150,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03A8535D2A40AC470045B055 /* Extensions.swift in Sources */,
+				8689CF282A4F3BFA00950D0F /* AccountModel.swift in Sources */,
 				03CCBE0A2A3A975F00EC51AE /* Macros.swift in Sources */,
 				867D539A2A32997200EDC6BA /* ContentView.swift in Sources */,
 				867D53A62A32999600EDC6BA /* AudioTrackView.swift in Sources */,
